@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <zip destfile="/Users/openopen/IdeaProjects/spring-boot-for-docker/target/app.zip">
+    <zipfileset dir="/Users/openopen/IdeaProjects/spring-boot-for-docker/target/docker"/>
+    <zipfileset includes="spring-boot-for-docker.jar" dir="/Users/openopen/IdeaProjects/spring-boot-for-docker/target"/>
+  </zip>
+</target>
+</project>
