@@ -7,8 +7,7 @@ WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 
-# Build a release artifact.
-RUN mvn clean install -DskipTests
+# Build a release artifact. 
 RUN mvn package -Pprod -DskipTests 
 
 # Use AdoptOpenJDK for base image.
