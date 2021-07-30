@@ -8,7 +8,7 @@ COPY pom.xml .
 COPY src ./src
 
 # Build a release artifact.  
-RUN mvn clean package -Pprod  -DskipTests 
+RUN mvn clean package -Pdev  -DskipTests 
 
 # Use AdoptOpenJDK for base image.
 # It's important to use OpenJDK 8u191 or above that has container support enabled.
@@ -17,7 +17,7 @@ RUN mvn clean package -Pprod  -DskipTests
 FROM adoptopenjdk/openjdk11:alpine-jre
 
 # Copy the jar to the production image from the builder stage.
-COPY --from=builder /app/target/spring-boot-for-docker.jar /spring-boot-for-docker.jar
+COPY --from=builder /app/target/spring-boot-for-docker.war /spring-boot-for-docker.war
 
 # Run the web service on container startup.
-CMD ["java",  "-jar", "/spring-boot-for-docker.jar"]
+CMD ["java",  "-jar", "/spring-boot-for-docker.war"]
