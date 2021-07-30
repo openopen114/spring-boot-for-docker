@@ -2,6 +2,13 @@ package org.example;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.Properties;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,6 +53,28 @@ public class Resource {
         String json = new Gson().toJson(obj);
 
         return json;
+    }
+    
+    
+    
+    @RequestMapping(value = "/db/config", method= RequestMethod.GET, produces = { "application/json" })
+    public String dbConfig() throws IOException {
+    	
+    	InputStream in = this.getClass().getResourceAsStream("/DB.properties");
+		Properties props = new Properties();
+		InputStreamReader inputStreamReader = new InputStreamReader(in, "UTF-8");
+		props.load(inputStreamReader);
+		 
+
+		JsonObject obj = new JsonObject();
+		obj.addProperty("APIENV", props.getProperty("APIENV"));
+		obj.addProperty("DB_HOST", props.getProperty("jdbc.dbHost"));  
+
+		String json = new Gson().toJson(obj);
+
+		return json;
+		
+		 
     }
 
 
