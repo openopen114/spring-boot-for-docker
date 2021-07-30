@@ -8,7 +8,8 @@ COPY pom.xml .
 COPY src ./src
 
 # Build a release artifact. 
-RUN mvn package -Pprod -DskipTests 
+RUN mvn clean install -Pprod -DskipTests 
+RUN mvn clean package -DskipTests 
 
 # Use AdoptOpenJDK for base image.
 # It's important to use OpenJDK 8u191 or above that has container support enabled.

@@ -128,6 +128,11 @@
 		    <resource>
 		        <directory>src/main/filters/${api.env}</directory>
 		    </resource>
+		    
+		    
+		    <resource>
+                <directory>src/main/webapp</directory>
+            </resource> 
 		</resources>
 		
 		
