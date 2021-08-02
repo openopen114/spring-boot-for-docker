@@ -1,4 +1,4 @@
-package org.example;
+package com.walsin.tst.springbootfordocker;
 
 import org.springframework.context.annotation.Configuration;
 import javax.servlet.*;

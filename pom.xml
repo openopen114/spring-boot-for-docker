@@ -44,6 +44,8 @@
                             <include>${project.build.finalName}.jar</include>
                         </resource>
                     </resources>
+                    <!--fork:如果没有该项配置,整个devtools不会起作用-->
+                    <fork>true</fork>
                 </configuration>
             </plugin>
             <!-- Copy Dockerfile -->
@@ -239,6 +241,15 @@
     <version>1.1.1</version>
 </dependency>
 
+
+
+<!--添加热部署-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+            <scope>true</scope>
+        </dependency> 
 
  
 
