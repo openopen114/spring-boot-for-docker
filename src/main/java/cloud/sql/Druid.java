@@ -58,7 +58,13 @@ public class Druid {
             String dbPort = p.getProperty("jdbc.dbPort");
             String dbSID = p.getProperty("jdbc.dbSID");
 
-            String connectionString = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbSID;
+
+
+            // Set up URL parameters
+            String connectionString = "jdbc:postgresql:///postgres";
+
+
+            //String connectionString = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbSID;
             url = connectionString;
             System.out.println("==> url : " + url);
             username = p.getProperty("jdbc.username");
@@ -77,9 +83,24 @@ public class Druid {
         pool = new DruidDataSource();
         //加载属性文件,初始化配置
         loadProp(fileName);
+//        pool.setUrl(url);
+//        pool.setUsername(username);
+//        pool.setPassword(password);
+
+
+
+        Properties connProps = new Properties();
+        connProps.setProperty("user", "postgres");
+        connProps.setProperty("password", "postgres");
+        connProps.setProperty("sslmode", "disable");
+        connProps.setProperty("socketFactory", "com.google.cloud.sql.postgres.SocketFactory");
+        connProps.setProperty("cloudSqlInstance", "madou-goole-sheet-std-c19:us-central1:test-pgsql-001");
+
+
+
+
         pool.setUrl(url);
-        pool.setUsername(username);
-        pool.setPassword(password);
+        pool.setConnectProperties(connProps);
 
         //设置连接池中初始连接数
         pool.setInitialSize(initialSize);
