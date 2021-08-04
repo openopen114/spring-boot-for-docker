@@ -9,8 +9,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Properties;
 
+import entity.Accounts;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -91,6 +93,21 @@ public class Resource {
 
         return Druid.getConnectInfo();
 
+    }
+
+
+
+    //http://localhost:8080/api/account/1
+    @RequestMapping(value = "/account/{_id}", method = RequestMethod.GET, produces = { "application/json" })
+    public String getAccountsByUserId(@PathVariable("_id") Integer _id) throws SQLException {
+        JsonObject obj = new JsonObject();
+
+        List<Accounts>  list = repo.getAccountsByUserId(_id);
+
+
+        String json = new Gson().toJson(list);
+
+        return json;
     }
 
 

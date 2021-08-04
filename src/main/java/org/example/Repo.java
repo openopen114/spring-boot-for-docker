@@ -110,4 +110,84 @@ public class Repo {
 
 
 
+
+
+
+
+    // 取得Accounts
+    public List<Accounts> getAccountsByUserId(Integer _userId) throws SQLException {
+
+
+        Connection conn = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            //取得連接
+            conn = Druid.getConn();
+
+			/*
+			 *
+			 *
+				select * from accounts where user_id = 1;
+			 */
+
+            //SQL
+            String query = "   select * from accounts where user_id =  ?  " ;
+
+            //預處理SQL
+            preparedStatement = null;
+            preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setInt(1,_userId);
+
+
+            //查詢請求
+            resultSet = preparedStatement.executeQuery();
+
+            //結果集
+            accountsLists.clear();
+            while (resultSet.next()) {
+
+                Accounts model = new Accounts();
+
+                model.setUsername(resultSet.getString("username"));
+                model.setPassword(resultSet.getString("password"));
+                model.setCreated_on(resultSet.getTimestamp("created_on"));
+                model.setUser_id(resultSet.getInt("user_id"));
+
+                accountsLists.add(model);
+            }
+
+
+            // Close
+            resultSet.close();
+
+
+        } catch (Throwable e) {
+            if (conn != null) {
+                try {
+                    //Roll back
+                    conn.rollback();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+            }
+            throw new RuntimeException(e);
+        } finally {
+            if (conn != null) {
+                try {
+                    preparedStatement.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
+        return accountsLists;
+    }
+
+
+
 }
