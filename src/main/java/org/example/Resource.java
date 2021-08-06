@@ -4,6 +4,8 @@ import cloud.sql.Druid;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+ 
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -11,8 +13,13 @@ import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import entity.Accounts;
+import entity.LineNotify;
+import http.Http;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -109,6 +116,72 @@ public class Resource {
 
         return json;
     }
+    
+    
+    
+    
+    // 發送到 Line Notify
+    // http://localhost:8080/api/send/line/notify  
+    @PostMapping(value ="/send/line/notify", produces = { "application/json" }) 
+    public String sendLineNotify(@RequestBody String _json) throws SQLException, InterruptedException, ExecutionException { 
+    	 
+		CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
+			System.out.println("====> Line Notify");
+			System.out.println(_json);
+			Gson gson = new Gson(); 
+			LineNotify model = gson.fromJson(_json, LineNotify.class);  
+			
+			
+ 
+			
+			//讀 properties
+			InputStream in = this.getClass().getResourceAsStream("/DB.properties");
+			Properties props = new Properties();
+			InputStreamReader inputStreamReader = null;
+			try {
+				inputStreamReader = new InputStreamReader(in, "UTF-8");
+				props.load(inputStreamReader);
+			} catch (UnsupportedEncodingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+			//API
+			String LineNotifyAPI = props.getProperty("line.notify.api");
+			
+			//TOKEN
+			String token = props.getProperty("line.bearer.token.notifytest");
+	 
+			
+			// 發送 LINE NOTIFY
+			try {
+				Http http = new Http();
+				http.sendPost(LineNotifyAPI, token, model.getMESSAGE());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+ 
+			// response
+			JsonObject obj = new JsonObject(); 
+			obj.addProperty("STATUS", true);
+			obj.addProperty("ACTION", "LINE_NOTIFY"); 
+			
+			
+			
+			String json = new Gson().toJson(obj); 
+			  
+			return json; 
+		 
+		});
+		
+		String result = future.get(); 
+		return result;
+	}
 
 
 
