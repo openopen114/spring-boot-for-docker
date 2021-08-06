@@ -36,7 +36,7 @@ public class Resource {
     }
 
 
-    //http://localhost:8080//api/echo?msg=aaaa
+    //http://localhost:8080/api/echo?msg=aaaa
     @RequestMapping(value = "/echo", method = RequestMethod.GET, produces = { "application/json" })
     public String echo(@RequestParam("msg") String _msg) {
         JsonObject obj = new JsonObject();

@@ -20,6 +20,11 @@ public class Druid {
 
     // druid 連接池
     private static DruidDataSource pool;
+    
+    
+    
+    /** APIENV **/
+    private static String APIENV;
 
     /** 資料庫  URL **/
     private static String url;
@@ -27,6 +32,10 @@ public class Druid {
     private static String username;
     /**密碼**/
     private static String password;
+    /**socketFactory**/
+    private static String socketFactory;
+    /**cloudSqlInstance**/
+    private static String cloudSqlInstance;
     /**初始連接數**/
     private static int initialSize;
     /**最大活動連接數**/
@@ -52,24 +61,37 @@ public class Druid {
             InputStream is = Druid.class.getResourceAsStream(fileName);
             Properties p = new Properties();
             p.load(is);
-
-
-            String dbHost = p.getProperty("jdbc.dbHost");
-            String dbPort = p.getProperty("jdbc.dbPort");
-            String dbSID = p.getProperty("jdbc.dbSID");
-
-
-
-            // Set up URL parameters
-            String connectionString = "jdbc:postgresql:///postgres";
-
-
-            //String connectionString = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbSID;
-            url = connectionString;
-            System.out.println("==> url : " + url);
+            
+            
+            
+            APIENV = p.getProperty("APIENV");
+            
+            
+            if(APIENV.equals("dev")) {
+            	//開發環境
+            	String dbHost = p.getProperty("jdbc.dbHost");
+                String dbPort = p.getProperty("jdbc.dbPort");
+                String dbSID = p.getProperty("jdbc.dbSID");
+                
+                // Set up URL parameters
+                String connectionString = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbSID;
+                url = connectionString;
+            }else {
+            	//cloud 環境
+            	// Set up URL parameters
+                String connectionString = "jdbc:postgresql:///postgres";
+                url = connectionString;
+            }
+ 
+ 
+            
+            System.out.println("==> url : [" + APIENV + "] " + url );
+            
+            //設定其他參數
             username = p.getProperty("jdbc.username");
-            password = p.getProperty("jdbc.password");
-
+            password = p.getProperty("jdbc.password"); 
+            socketFactory = p.getProperty("jdbc.socketFactory");
+            cloudSqlInstance = p.getProperty("jdbc.cloudSqlInstance");
             initialSize = Integer.parseInt(p.getProperty("initialSize"));
             maxActive = Integer.parseInt(p.getProperty("maxActive"));
             maxWait = Integer.parseInt(p.getProperty("maxWait"));
@@ -82,30 +104,33 @@ public class Druid {
     private static void init() {
         pool = new DruidDataSource();
         //加载属性文件,初始化配置
-        loadProp(fileName);
-//        pool.setUrl(url);
-//        pool.setUsername(username);
-//        pool.setPassword(password);
+        loadProp(fileName); 
+
+               
+        if(APIENV.equals("dev")) {
+        	//開發環境
+        	 pool.setUrl(url);
+        	 pool.setUsername(username);
+        	 pool.setPassword(password); 
+        }else {
+        	//cloud 環境 
+        	Properties connProps = new Properties();
+            connProps.setProperty("user", "postgres");
+            connProps.setProperty("password", "postgres");
+            connProps.setProperty("sslmode", "disable");
+            connProps.setProperty("socketFactory", socketFactory);
+            connProps.setProperty("cloudSqlInstance", cloudSqlInstance);
+            connProps.setProperty("connectTimeout","60");
+            connProps.setProperty("socketTimeout", "60");
+            connProps.setProperty("loginTimeout", "60");
+            pool.setUrl(url);
+            pool.setConnectProperties(connProps);
+        }
 
 
 
-        Properties connProps = new Properties();
-        connProps.setProperty("user", "postgres");
-        connProps.setProperty("password", "postgres");
-        connProps.setProperty("sslmode", "disable");
-        connProps.setProperty("socketFactory", "com.google.cloud.sql.postgres.SocketFactory");
-        connProps.setProperty("cloudSqlInstance", "madou-goole-sheet-std-c19:us-central1:test-pgsql-001");
-        connProps.setProperty("connectTimeout","60");
-        connProps.setProperty("socketTimeout", "60");
-        connProps.setProperty("loginTimeout", "60");
 
-
- 
-
-
-
-        pool.setUrl(url);
-        pool.setConnectProperties(connProps);
+        
 
         //设置连接池中初始连接数
         pool.setInitialSize(initialSize);
