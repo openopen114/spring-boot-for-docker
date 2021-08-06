@@ -95,7 +95,12 @@ public class Druid {
         connProps.setProperty("sslmode", "disable");
         connProps.setProperty("socketFactory", "com.google.cloud.sql.postgres.SocketFactory");
         connProps.setProperty("cloudSqlInstance", "madou-goole-sheet-std-c19:us-central1:test-pgsql-001");
+        connProps.setProperty("connectTimeout ", 5);
+        connProps.setProperty("socketTimeout ", 5);
+        connProps.setProperty("loginTimeout ", 5);
 
+
+ 
 
 
 
