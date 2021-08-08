@@ -190,4 +190,85 @@ public class Repo {
 
 
 
+
+
+
+    // 取得 tra01 最新一筆
+    public String getTra01Lastest() throws SQLException {
+
+
+        Connection conn = null;
+        PreparedStatement psmt = null;
+        ResultSet resultSet = null;
+
+
+        String result = "===> ";
+
+        try {
+            //取得連接
+            conn = Druid.getConn();
+
+			/*
+			 *
+			 *
+				select * from tra01
+                where status = 'Y'
+                order by date desc
+                limit 1
+			 */
+
+            //SQL
+            String query = "   select * from tra01 " +
+                    "where status = 'Y' " +
+                    "order by date desc " +
+                    "limit 1 " ;
+
+            //預處理SQL
+            psmt = null;
+            psmt = conn.prepareStatement(query);
+
+
+            //查詢請求
+            resultSet = psmt.executeQuery();
+
+            //結果集
+            accountsLists.clear();
+            while (resultSet.next()) {
+
+                result = result + resultSet.getString("date");
+            }
+
+
+            // Close
+            resultSet.close();
+
+
+        } catch (Throwable e) {
+            if (conn != null) {
+                try {
+                    //Roll back
+                    conn.rollback();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+            }
+            throw new RuntimeException(e);
+        } finally {
+            if (conn != null) {
+                try {
+                    psmt.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
+        return result;
+    }
+
+
+
+
 }

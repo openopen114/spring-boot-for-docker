@@ -183,6 +183,14 @@ public class Resource {
 		return result;
 	}
 
+    // 取得 tra01 最新一筆
+    //http://localhost:8080/api/tra01/lastest
+    @RequestMapping(value = "/tra01/lastest", method= RequestMethod.GET)
+    public String getTra01Lastest() throws SQLException {
+        return repo.getTra01Lastest();
+    }
+
+
 
 
 
