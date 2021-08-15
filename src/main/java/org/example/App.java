@@ -3,6 +3,7 @@ package org.example;
 import cloud.sql.Druid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,24 @@ import java.util.Properties;
 public class App {
     private static final Logger logger
             = LoggerFactory.getLogger(App.class);
+
+
+
+    @Value("${APIENV}")
+    private   String APIENV;
+
+
+
+    @RequestMapping(value = "/")
+    String hello() {
+
+        return "Hello World!" + APIENV;
+    }
+
+
+
+
+
     public static void main(String[] args) throws IOException {
 
 
@@ -26,26 +45,21 @@ public class App {
         getApiEnv();
     }
 
-    @RequestMapping(value = "/")
-    String hello() {
-        return "Hello World!";
-    }
 
 
-
-
+    @RequestMapping(value = "/env")
     public static  String getApiEnv() throws IOException {
         String fileName = "/DB.properties";
         InputStream is = Druid.class.getResourceAsStream(fileName);
         Properties p = new Properties();
         p.load(is);
 
-        String APIENV = p.getProperty("APIENV");
+        String env = p.getProperty("APIENV");
 
 
         logger.info("===================================");
-        logger.info("==========> APIENV: " + APIENV  +" <==========");
+        logger.info("==========> APIENV: " + env  +" <==========");
         logger.info("===================================");
-        return APIENV;
+        return env;
     }
 }
