@@ -29,7 +29,7 @@ public class App {
     @RequestMapping(value = "/")
     String hello() {
 
-        return "Hello World!" + APIENV;
+        return "Hello World! ENV:" + APIENV;
     }
 
 
